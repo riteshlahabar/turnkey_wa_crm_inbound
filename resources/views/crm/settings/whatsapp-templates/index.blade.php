@@ -83,7 +83,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="iconoir-save-action-floppy me-1"></i>
+                        <i class="iconoir-check-circle me-1"></i>
                         Save Template
                     </button>
                 </form>
