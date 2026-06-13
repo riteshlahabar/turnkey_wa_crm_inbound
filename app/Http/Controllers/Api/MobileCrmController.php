@@ -58,7 +58,7 @@ class MobileCrmController extends Controller
             ->orderBy('crm_courses.sort_order')
             ->orderBy('crm_courses.name')
             ->get()
-            ->map(function ($course) {
+            ->map(function ($course) use ($request) {
                 $template = null;
 
                 if (Schema::hasTable('crm_whatsapp_templates')) {
