@@ -1,0 +1,6 @@
+@extends('layouts.app')
+@section('title','Fee Quotation Report')
+@section('content')
+@include('crm._page_header', ['title' => 'Fee Quotation Report', 'subtitle' => 'Lead-wise fee quotations'])
+<div class="card"><div class="card-body table-responsive"><table class="table table-hover"><thead class="table-light"><tr><th>Quotation No</th><th>Lead</th><th>Course</th><th>Total</th><th>Discount</th><th>Final</th><th>By</th><th>Print</th></tr></thead><tbody>@foreach($quotations as $q)<tr><td>{{ $q->quotation_no }}</td><td><a href="{{ route('leads.show',$q->lead_id) }}">{{ $q->lead?->lead_no }}</a></td><td>{{ $q->course?->name }}</td><td>{{ number_format($q->total_fee,2) }}</td><td>{{ number_format($q->discount,2) }}</td><td>{{ number_format($q->final_fee,2) }}</td><td>{{ $q->creator?->name }}</td><td><a href="{{ route('leads.quotation.print',$q) }}" target="_blank" class="btn btn-sm btn-light border">Print</a></td></tr>@endforeach</tbody></table>{{ $quotations->links() }}</div></div>
+@endsection
