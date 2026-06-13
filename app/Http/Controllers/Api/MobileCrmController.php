@@ -34,7 +34,7 @@ class MobileCrmController extends Controller
         ]);
     }
 
-    public function courses()
+    public function courses(Request $request)
     {
         if (!Schema::hasTable('crm_courses')) {
             return response()->json([
@@ -81,7 +81,10 @@ class MobileCrmController extends Controller
                     'standard' => $course->standard_name,
                     'fee_amount' => $course->fee_amount ?? 0,
                     'description' => $course->description ?? '',
-                    'message' => $template->message ?? 'Hello! Thank you for contacting us.',
+                    'message' => $this->replaceUserTemplateVariables(
+                        $template->message ?? 'Hello! Thank you for contacting us.',
+                        $request->user()
+                    ),
                     'template_id' => $template->id ?? null,
                 ];
             });
@@ -121,7 +124,12 @@ class MobileCrmController extends Controller
             })
             ->orderBy('crm_whatsapp_templates.sort_order')
             ->orderBy('crm_whatsapp_templates.title')
-            ->get();
+            ->get()
+            ->map(function ($template) use ($request) {
+                $template->message = $this->replaceUserTemplateVariables($template->message, $request->user());
+
+                return $template;
+            });
 
         return response()->json([
             'success' => true,
@@ -287,6 +295,8 @@ class MobileCrmController extends Controller
     ) {
         $message = optional($template)->message ?? 'Hello! Thank you for contacting us.';
     }
+
+    $message = $this->replaceUserTemplateVariables($message, $request->user());
 
     /*
     |--------------------------------------------------------------------------
@@ -604,7 +614,10 @@ class MobileCrmController extends Controller
 
     $template = $this->courseTemplate($courseId);
 
-    $message = optional($template)->message ?? 'Hello! Thank you for contacting us.';
+    $message = $this->replaceUserTemplateVariables(
+        optional($template)->message ?? 'Hello! Thank you for contacting us.',
+        request()->user()
+    );
 
     $courseData = $courseId ? [
         'id' => (int) $courseId,
@@ -671,6 +684,20 @@ private function courseTemplate($courseId)
         ->orderBy('title')
         ->first();
 }
+
+    private function replaceUserTemplateVariables(?string $message, $user): string
+    {
+        $message = $message ?? 'Hello! Thank you for contacting us.';
+
+        $replacements = [
+            '{user_name}' => $user->name ?? '',
+            '{username}' => $user->name ?? '',
+            '{user_mobile}' => $user->mobile ?? '',
+            '{mobile_number}' => $user->mobile ?? '',
+        ];
+
+        return strtr($message, $replacements);
+    }
 
     private function formatLead($lead): array
     {

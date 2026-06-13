@@ -100,6 +100,8 @@
                     <span class="badge bg-light text-dark border">{course_name}</span>
                     <span class="badge bg-light text-dark border">{standard}</span>
                     <span class="badge bg-light text-dark border">{academy_name}</span>
+                    <span class="badge bg-light text-dark border">{user_name}</span>
+                    <span class="badge bg-light text-dark border">{user_mobile}</span>
                 </div>
             </div>
         </div>
